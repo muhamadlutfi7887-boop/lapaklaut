@@ -97,7 +97,7 @@ const invalidate = () => Promise.all([cdel('games'), cdel('report')]);
 export async function completeOrder(id, status, providerRef) {
   const o = await prisma.order.findUnique({ where: { id } });
   if (!o) throw new AppError(404, 'Pesanan tidak ditemukan');
-  if (['success', 'failed'].includes(o.status)) return o; // sudah final, abaikan callback ganda
+  if (['success', 'failed'].includes(o.status)) return o;
   if (!['paid', 'processing'].includes(o.status)) throw new AppError(409, `Pesanan berstatus ${o.status}`);
   const live = { id, status: { in: ['paid', 'processing'] } };
   if (status === 'success') {
