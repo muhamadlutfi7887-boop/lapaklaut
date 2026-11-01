@@ -1,0 +1,69 @@
+// Paste ke https://dbdiagram.io untuk melihat diagram ERD
+Table User {
+  id int [pk, increment]
+  name varchar
+  email varchar [unique]
+  password varchar [note: 'hash bcrypt']
+  role varchar [default: 'user', note: 'user | admin']
+  createdAt datetime
+}
+Table Category {
+  id int [pk, increment]
+  name varchar [unique]
+}
+Table Game {
+  id int [pk, increment]
+  slug varchar [unique]
+  name varchar
+  currency varchar [note: 'Diamond, UC, VP, dst']
+  cover varchar
+  fields text [note: 'JSON aturan input akun: label, regex, hint']
+  active boolean
+  categoryId int [ref: > Category.id]
+}
+Table Product {
+  id int [pk, increment]
+  gameId int [ref: > Game.id]
+  label varchar [note: '86 Diamond']
+  price int
+  costPrice int
+  stock int [note: 'null = unlimited']
+  active boolean
+}
+Table Promo {
+  id int [pk, increment]
+  code varchar [unique]
+  type varchar [note: 'percent | fixed']
+  value int
+  maxDiscount int
+  minAmount int
+  quota int [note: 'sisa kuota, null = unlimited']
+  active boolean
+}
+Table Order {
+  id int [pk, increment]
+  invoice varchar [unique]
+  userId int [ref: > User.id]
+  gameId int [ref: > Game.id]
+  productId int [ref: > Product.id]
+  promoId int [ref: > Promo.id]
+  itemLabel varchar [note: 'snapshot nama item']
+  target varchar [note: 'ID akun tujuan']
+  price int [note: 'snapshot harga jual']
+  costPrice int [note: 'snapshot modal']
+  fee int
+  discount int
+  total int
+  status varchar [note: 'pending|paid|processing|success|failed|expired']
+  providerRef varchar
+  expiresAt datetime
+  createdAt datetime
+}
+Table Payment {
+  id int [pk, increment]
+  orderId int [unique, ref: - Order.id]
+  method varchar
+  reference varchar [unique]
+  status varchar [note: 'pending | paid | expired']
+  paidAt datetime
+}

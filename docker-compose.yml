@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: lapaklaut_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: lapaklautt_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  api:
+    build: ./backend
+    container_name: lapaklaut_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=mysql://root:@db:3306/lapaklautt_db
+      - JWT_SECRET=super_secret_lms_key_2026
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

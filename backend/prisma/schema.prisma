@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user") // user | admin
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  games Game[]
+}
+
+model Game {
+  id         Int      @id @default(autoincrement())
+  slug       String   @unique
+  name       String
+  currency   String
+  cover      String   @default("#0a6ea8")
+  fields     String // JSON: [{label, pattern, hint}] aturan input akun per game
+  active     Boolean  @default(true)
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  products   Product[]
+  orders     Order[]
+}
+
+model Product {
+  id        Int     @id @default(autoincrement())
+  gameId    Int
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  label     String
+  price     Int
+  costPrice Int
+  stock     Int? // null = unlimited
+  active    Boolean @default(true)
+  orders    Order[]
+}
+
+model Promo {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique
+  type        String // percent | fixed
+  value       Int
+  maxDiscount Int?
+  minAmount   Int     @default(0)
+  quota       Int? // sisa kuota, null = unlimited
+  active      Boolean @default(true)
+  orders      Order[]
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  invoice     String   @unique
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  gameId      Int
+  game        Game     @relation(fields: [gameId], references: [id])
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  itemLabel   String // snapshot nama item
+  target      String // ID akun tujuan
+  price       Int // snapshot harga jual
+  costPrice   Int // snapshot modal
+  fee         Int
+  discount    Int
+  total       Int
+  promoId     Int?
+  promo       Promo?   @relation(fields: [promoId], references: [id])
+  status      String   @default("pending") // pending|paid|processing|success|failed|expired
+  providerRef String? // referensi transaksi dari fulfillment service
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  payment     Payment?
+
+  @@index([userId])
+  @@index([status, createdAt])
+}
+
+model Payment {
+  id        Int       @id @default(autoincrement())
+  orderId   Int       @unique
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method    String
+  reference String    @unique
+  status    String    @default("pending") // pending | paid | expired
+  paidAt    DateTime?
+}
