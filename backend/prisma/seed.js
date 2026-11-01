@@ -4,7 +4,6 @@ import { ymd } from '../src/utils.js';
 
 const prisma = new PrismaClient();
 const F = (label, pattern, hint) => ({ label, pattern, hint });
-// [slug, nama, mata uang, kategori, warna cover, aturan input, [[jumlah, harga]], stok]
 const games = [
   ['mobile-legends', 'Mobile Legends', 'Diamond', 'MOBA', '#1e3a8a', [F('User ID', '^\\d{6,12}$', '6–12 digit'), F('Zone ID', '^\\d{3,5}$', '3–5 digit')], [[86, 20000], [172, 39000], [257, 58000], [344, 77000], [514, 115000], [706, 155000]]],
   ['free-fire', 'Free Fire', 'Diamond', 'Battle Royale', '#9a3412', [F('Player ID', '^\\d{8,12}$', '8–12 digit')], [[50, 7000], [140, 19000], [355, 48000], [720, 95000]]],
@@ -44,7 +43,6 @@ async function main() {
     ],
   });
 
-  // riwayat transaksi contoh supaya dashboard admin tidak kosong
   for (let i = 0; i < 40; i++) {
     const g = created[i % created.length], p = g.products[i % g.products.length];
     const d = new Date(Date.now() - (i % 14) * 864e5 - i * 36e5);
