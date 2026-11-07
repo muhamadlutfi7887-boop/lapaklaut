@@ -1,5 +1,5 @@
 # LapakLaut – Marketplace Top Up Game
-![Uploading image.png…]()
+<img width="1075" height="763" alt="image" src="https://github.com/user-attachments/assets/f1b2a126-5226-4a8a-986f-1f6abc9a13e5" />
 
 Final Project Full Stack Web Development. Tema: Sistem Transaksi Penjualan (marketplace top up game).
 
